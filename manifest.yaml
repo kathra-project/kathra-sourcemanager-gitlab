@@ -1,0 +1,129 @@
+---
+apiVersion: v1
+kind: Template
+metadata:
+  annotations:
+    description: "${DESC}"
+  labels:
+    product: "${PRODUCT_NAME}"
+    app: "${SERVICE_NAME}"
+  name: "${SERVICE_NAME}-${IMPL_NAME}"
+objects:
+- apiVersion: extensions/v1beta1
+  kind: Deployment
+  metadata:
+    name: "${SERVICE_NAME}-${IMPL_NAME}"
+    labels:
+      product: "${PRODUCT_NAME}"
+      app: "${SERVICE_NAME}"
+      impl: "${IMPL_NAME}"
+  spec:
+    replicas: '1'
+    template:
+      metadata:
+        labels:
+          product: "${PRODUCT_NAME}"
+          app: "${SERVICE_NAME}"
+          impl: "${IMPL_NAME}"
+      spec:
+        containers:
+        - name: "${SERVICE_NAME}-${IMPL_NAME}"
+          image: "${IMAGE_NAME}"
+          ports:
+          - name: web
+            containerPort: ${PORT}
+            protocol: TCP
+          env:
+          - name: KUBERNETES_NAMESPACE
+            valueFrom:
+              fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.namespace
+          - name: KATHRA_ROOT_GROUP
+            valueFrom:
+              configMapKeyRef:
+                key: KATHRA_ROOT_GROUP
+                name: source-manager-config
+          - name: KATHRA_SOURCEMANAGER_GITLAB_API_TOKEN
+            valueFrom:
+              secretKeyRef:
+                key: KATHRA_SOURCEMANAGER_GITLAB_API_TOKEN
+                name: source-manager-secret
+          - name: KATHRA_SOURCEMANAGER_GITLAB_URL
+            valueFrom:
+              configMapKeyRef:
+                key: KATHRA_SOURCEMANAGER_GITLAB_URL
+                name: source-manager-config
+          - name: KATHRA_SOURCEMANAGER_USERMANAGER_URL
+            valueFrom:
+              configMapKeyRef:
+                key: KATHRA_SOURCEMANAGER_USERMANAGER_URL
+                name: source-manager-config
+          - name: KATHRA_SOURCEMANAGER_FOLDER_NAME_CONTAINING_GIT_REPOS
+            valueFrom:
+              configMapKeyRef:
+                key: KATHRA_SOURCEMANAGER_FOLDER_NAME_CONTAINING_GIT_REPOS
+                name: source-manager-config
+          - name: KATHRA_SOURCEMANAGER_MAXIMAL_TRY_NUMBER_TO_CREATE_DIRECTORY
+            valueFrom:
+              configMapKeyRef:
+                key: KATHRA_SOURCEMANAGER_MAXIMAL_TRY_NUMBER_TO_CREATE_DIRECTORY
+                name: source-manager-config
+          - name: KATHRA_SOURCEMANAGER_DELETE_FOLDER_AFTER_GIT
+            valueFrom:
+              configMapKeyRef:
+                key: KATHRA_SOURCEMANAGER_DELETE_FOLDER_AFTER_GIT
+                name: source-manager-config
+          - name: KATHRA_SOURCEMANAGER_DELETE_ZIP_FILE
+            valueFrom:
+              configMapKeyRef:
+                key: KATHRA_SOURCEMANAGER_DELETE_ZIP_FILE
+                name: source-manager-config
+          - name: KEYCLOAK_AUTH_URL
+            valueFrom:
+              configMapKeyRef:
+                name: keycloak-config
+                key: KEYCLOAK_AUTH_URL
+          - name: KEYCLOAK_REALM
+            valueFrom:
+              configMapKeyRef:
+                name: keycloak-config
+                key: KEYCLOAK_REALM
+          - name: KEYCLOAK_CLIENT_ID
+            valueFrom:
+              secretKeyRef:
+                key: KEYCLOAK_CLIENT_ID
+                name: kathra-keycloak-secret
+          - name: KEYCLOAK_CLIENT_SECRET
+            valueFrom:
+              secretKeyRef:
+                key: KEYCLOAK_CLIENT_SECRET
+                name: kathra-keycloak-secret
+          resources:
+            limits:
+              cpu: "${RESOURCES_CPU_MAX}"
+              memory: "2Gi"
+            requests:
+              cpu: "${RESOURCES_CPU_MIN}"
+              memory: "1Gi"
+        imagePullSecrets:
+        - name: regcred
+
+- kind: Service
+  apiVersion: v1
+  metadata:
+    name: "${SERVICE_NAME}"
+    labels:
+      product: "${PRODUCT_NAME}"
+      app: "${SERVICE_NAME}"
+      expose: true
+  spec:
+    ports:
+    - protocol: TCP
+      port: 80
+      targetPort: ${PORT}
+    selector:
+      product: "${PRODUCT_NAME}"
+      app: "${SERVICE_NAME}"
+    type: ClusterIP
+    sessionAffinity: None

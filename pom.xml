@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+
+<!--
+ ~ Copyright 2019 The Kathra Authors.
+ ~
+ ~ Licensed under the Apache License, Version 2.0 (the "License");
+ ~ you may not use this file except in compliance with the License.
+ ~ You may obtain a copy of the License at
+ ~
+ ~     http://www.apache.org/licenses/LICENSE-2.0
+ ~
+ ~ Unless required by applicable law or agreed to in writing, software
+ ~ distributed under the License is distributed on an "AS IS" BASIS,
+ ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ ~ See the License for the specific language governing permissions and
+ ~ limitations under the License.
+ ~
+ ~ Contributors:
+ ~
+ ~    IRT SystemX (https://www.kathra.org/)    
+ ~
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.kathra</groupId>
+    <artifactId>kathra-sourcemanager-gitlab</artifactId>
+    <packaging>jar</packaging>
+    <name>KATHRA :: SourceManager :: Gitlab</name>
+    <version>1.0.0-RC-SNAPSHOT</version>
+
+    <parent>
+        <groupId>org.kathra</groupId>
+        <artifactId>kathra-exec-parent</artifactId>
+        <version>1.0.0-RC-SNAPSHOT</version>
+    </parent>
+
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.19</version>
+                <configuration>
+                    <environmentVariables>
+                        <KATHRA_SOURCEMANAGER_DELETE_FOLDER_AFTER_GIT>false</KATHRA_SOURCEMANAGER_DELETE_FOLDER_AFTER_GIT>
+                        <KATHRA_SOURCEMANAGER_GITLAB_API_TOKEN>lol</KATHRA_SOURCEMANAGER_GITLAB_API_TOKEN>
+                    </environmentVariables>
+                </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.junit.platform</groupId>
+                        <artifactId>junit-platform-surefire-provider</artifactId>
+                        <version>1.0.0</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
+        </plugins>
+    </build>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.kathra</groupId>
+            <artifactId>kathra-sourcemanager-interface</artifactId>
+            <version>1.0.0-RC-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>org.gitlab</groupId>
+            <artifactId>java-gitlab-api</artifactId>
+            <version>4.1.0</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-api</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.fasterxml.jackson.core</groupId>
+                    <artifactId>jackson-databind</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.fasterxml.jackson.core</groupId>
+                    <artifactId>jackson-core</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.fasterxml.jackson.core</groupId>
+                    <artifactId>jackson-annotations</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.jgit</groupId>
+            <artifactId>org.eclipse.jgit</artifactId>
+            <version>5.0.0.201805301535-rc2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.zeroturnaround</groupId>
+            <artifactId>zt-zip</artifactId>
+            <version>1.12</version>
+            <type>jar</type>
+        </dependency>
+        <dependency>
+            <groupId>com.mashape.unirest</groupId>
+            <artifactId>unirest-java</artifactId>
+            <version>1.4.9</version>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <version>5.3.1</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-junit-jupiter</artifactId>
+            <version>2.23.0</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+
+    
+   
+    <url>http://gitlab.com/kathra/kathra/kathra-services/kathra-sourcemanager/kathra-sourcemanager-java/kathra-sourcemanager-gitlab</url>
+    
+    <licenses>
+        <license>
+          <name>The Apache Software License, Version 2.0</name>
+          <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+        </license>
+    </licenses>
+    
+    <developers>
+        <developer>
+          <name>Jeremy Guillemot</name>
+          <email>jeremy.guillemot@irt-systemx.fr</email>
+          <organization>IRT SystemX</organization>
+          <organizationUrl>https://www.irt-systemx.fr</organizationUrl>
+        </developer>
+        <developer>
+          <name>Antoine Cleuet</name>
+          <email>antoine.cleuet@irt-systemx.fr</email>
+          <organization>IRT SystemX</organization>
+          <organizationUrl>https://www.irt-systemx.fr</organizationUrl>
+        </developer>
+        <developer>
+          <name>Pierre D'Aviau De Ternay</name>
+          <email>pierre.daviaudeternay@irt-systemx.fr</email>
+          <organization>IRT SystemX</organization>
+          <organizationUrl>https://www.irt-systemx.fr</organizationUrl>
+        </developer>
+        <developer>
+          <name>Quentin Semanne</name>
+          <email>quentin.semanne@irt-systemx.fr</email>
+          <organization>IRT SystemX</organization>
+          <organizationUrl>https://www.irt-systemx.fr</organizationUrl>
+        </developer>
+        <developer>
+          <name>Jean-Alexis Lauricella</name>
+          <email>jean-alexis.lauricella@irt-systemx.fr</email>
+          <organization>IRT SystemX</organization>
+          <organizationUrl>https://www.irt-systemx.fr</organizationUrl>
+        </developer>
+        <developer>
+          <name>Julien Boubechtoula</name>
+          <email>julien.boubechtoula@irt-systemx.fr</email>
+          <organization>IRT SystemX</organization>
+          <organizationUrl>https://www.irt-systemx.fr</organizationUrl>
+        </developer>
+    </developers>
+    
+    <scm>
+        <connection>scm:git:git@gitlab.com:kathra/kathra/kathra-services/kathra-sourcemanager/kathra-sourcemanager-java/kathra-sourcemanager-gitlab.git</connection>
+        <developerConnection>scm:git:ssh://gitlab.com:kathra/kathra/kathra-services/kathra-sourcemanager/kathra-sourcemanager-java/kathra-sourcemanager-gitlab.git</developerConnection>
+        <url>https://gitlab.com/kathra/kathra/kathra-services/kathra-sourcemanager/kathra-sourcemanager-java/kathra-sourcemanager-gitlab/tree/master</url>
+    </scm>
+ 
+ 
+    <description>no description</description>
+ 
+ </project>
