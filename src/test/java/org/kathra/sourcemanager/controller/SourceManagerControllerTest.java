@@ -20,8 +20,10 @@
  */
 package org.kathra.sourcemanager.controller;
 
+import org.junit.Assert;
 import org.kathra.core.model.SourceRepository;
 import org.kathra.sourcemanager.model.Folder;
+import org.kathra.utils.KathraException;
 import org.kathra.utils.Session;
 import javassist.NotFoundException;
 import org.apache.commons.io.FileUtils;
@@ -272,4 +274,39 @@ class SourceManagerControllerTest {
     }
 
 
+    @Test
+    public void given_nominalArgs_when_deleteSourceRepository_then_work() throws Exception {
+        String sourceRepositoryPath = KATHRA_PROJECTS_DT+"/an-example";
+        int identifierProject=7;
+        GitlabProject gitlabProject = Mockito.mock(GitlabProject.class);
+        Mockito.when(gitlabProject.getId()).thenReturn(identifierProject);
+        Mockito.when(gitlabService.getProjectFromPath(sourceRepositoryPath)).thenReturn(gitlabProject);
+        Assert.assertEquals(underTest.deleteSourceRepository(sourceRepositoryPath), "OK");
+        Mockito.verify(gitlabService.getUserClient()).deleteProject(identifierProject);
+    }
+
+    @Test
+    public void given_pathNoExisting_when_deleteSourceRepository_then_throws_exception_404() throws Exception {
+        String sourceRepositoryPath = KATHRA_PROJECTS_DT+"/an-example";
+        Mockito.when(gitlabService.getProjectFromPath(sourceRepositoryPath)).thenReturn(null);
+        KathraException e = assertThrows(KathraException.class, () -> {
+            underTest.deleteSourceRepository(sourceRepositoryPath);
+        });
+        Assert.assertEquals(KathraException.ErrorCode.NOT_FOUND, e.getErrorCode());
+    }
+
+    @Test
+    public void given_unknownErrorDeletingGetProject_when_deleteSourceRepository_then_throws_exception_500() throws Exception {
+        String sourceRepositoryPath = KATHRA_PROJECTS_DT+"/an-example";
+
+        int identifierProject=7;
+        GitlabProject gitlabProject = Mockito.mock(GitlabProject.class);
+        Mockito.when(gitlabProject.getId()).thenReturn(identifierProject);
+        Mockito.when(gitlabService.getProjectFromPath(sourceRepositoryPath)).thenReturn(gitlabProject);
+        Mockito.doThrow(new IOException()).when(userClient).deleteProject(7);
+        KathraException e = assertThrows(KathraException.class, () -> {
+            underTest.deleteSourceRepository(sourceRepositoryPath);
+        });
+        Assert.assertEquals(KathraException.ErrorCode.INTERNAL_SERVER_ERROR, e.getErrorCode());
+    }
 }
