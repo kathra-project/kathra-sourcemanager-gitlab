@@ -233,6 +233,23 @@ public class SourceManagerController implements SourceManagerService {
         return folder;
     }
 
+    @Override
+    public String deleteSourceRepository(String sourceRepositoryPath) throws Exception {
+        try {
+            GitlabProject project = gitlabService.getProjectFromPath(sourceRepositoryPath);
+            if (project == null) {
+                throw new KathraException("No project found.").errorCode(KathraException.ErrorCode.NOT_FOUND);
+            }
+            gitlabService.getUserClient().deleteProject(project.getId());
+        } catch(KathraException e) {
+            throw e;
+        } catch(Exception e) {
+            e.printStackTrace();
+            throw new KathraException("Internal error.").errorCode(KathraException.ErrorCode.INTERNAL_SERVER_ERROR);
+        }
+        return "OK";
+    }
+
     /**
      * Create a new Source Repository in Kathra Repository Provider
      *
@@ -499,6 +516,7 @@ public class SourceManagerController implements SourceManagerService {
         gitlabService.deleteMemberships(memberships);
         return new ApiResponse(200, null, "Successfully removed members");
     }
+
 
     /**
      * Retrieve memberships in specified project
