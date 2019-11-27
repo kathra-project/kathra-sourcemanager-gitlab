@@ -1,41 +1,42 @@
-swagger: '2.0'
+swagger: "2.0"
 info:
   x-groupId: org.kathra
   x-artifactName: SourceManager
-  description: Kathra SourceManager is a Kathra Service in charge of source management operations
-  version: 1.0.0-RC-SNAPSHOT
+  description: Kathra SourceManager is a Kathra Service in charge of source management
+    operations
+  version: 1.0.0
   title: Kathra SourceManager
 securityDefinitions:
   kathra_auth:
-    type: "oauth2"
-    authorizationUrl: "https://keycloak.irtsysx.fr/auth/realms/kathra/protocol/openid-connect/auth"
-    tokenUrl: "https://keycloak.irtsysx.fr/auth/realms/kathra/protocol/openid-connect/token"
-    flow: "accessCode"
+    type: oauth2
+    authorizationUrl: https://keycloak.irtsysx.fr/auth/realms/kathra/protocol/openid-connect/auth
+    tokenUrl: https://keycloak.irtsysx.fr/auth/realms/kathra/protocol/openid-connect/token
+    flow: accessCode
     scopes:
-      read: "read everything"
-      write: "create everything"
+      read: read everything
+      write: create everything
 paths:
-  "/folders/{folderPath}":
-      get:
-        operationId: getFolder
-        summary: Retrieve specified folder object
-        consumes:
-        - application/json
-        produces:
-        - application/json
-        parameters:
-        - $ref: '#/parameters/folderPath'
-        responses:
-          '200':
-            description: Created object
-            schema:
-              $ref: "#/definitions/Folder"
-          '401':
-            description: Unauthorized
-        security:
-        - kathra_auth:
-          - "read"
-  "/folders/{folderPath}/sourceRepositories":
+  /folders/{folderPath}:
+    get:
+      operationId: getFolder
+      summary: Retrieve specified folder object
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - $ref: '#/parameters/folderPath'
+      responses:
+        "200":
+          description: Created object
+          schema:
+            $ref: '#/definitions/Folder'
+        "401":
+          description: Unauthorized
+      security:
+      - kathra_auth:
+        - read
+  /folders/{folderPath}/sourceRepositories:
     get:
       operationId: getSourceRepositoriesInFolder
       summary: Retrieve accessible Source Repositories in the specified folder
@@ -46,18 +47,18 @@ paths:
       parameters:
       - $ref: '#/parameters/folderPath'
       responses:
-        '200':
+        "200":
           description: List of accessible Source Repositories in the specified folder
           schema:
             type: array
             items:
-              $ref: "#/definitions/SourceRepository"
-        '401':
+              $ref: '#/definitions/SourceRepository'
+        "401":
           description: Unauthorized
       security:
       - kathra_auth:
-        - "read"
-  "/sourceRepositories":
+        - read
+  /sourceRepositories:
     post:
       summary: Create a new Source Repository in Kathra Repository Provider
       operationId: createSourceRepository
@@ -69,7 +70,7 @@ paths:
         description: SourceRepository object to be created
         required: true
         schema:
-          $ref: "#/definitions/SourceRepository"
+          $ref: '#/definitions/SourceRepository'
       - name: deployKeys
         in: query
         description: A list of deployKey Ids to enable in the created source repository
@@ -78,16 +79,16 @@ paths:
         items:
           type: string
       responses:
-        '200':
+        "200":
           description: Created object
           schema:
-            $ref: "#/definitions/SourceRepository"
-        '401':
+            $ref: '#/definitions/SourceRepository'
+        "401":
           description: Unauthorized
       security:
       - kathra_auth:
-        - "write"
-  "/sourceRepositories/{sourceRepositoryPath}/branches":
+        - write
+  /sourceRepositories/{sourceRepositoryPath}/branches:
     get:
       operationId: getBranches
       summary: Retrieve accessible branches in an existing Kathra SourceRepository
@@ -98,17 +99,18 @@ paths:
       parameters:
       - $ref: '#/parameters/sourceRepositoryPath'
       responses:
-        '200':
-          description: List of accessible Source Repositories branches in the specified repo
+        "200":
+          description: List of accessible Source Repositories branches in the specified
+            repo
           schema:
             type: array
             items:
               type: string
-        '401':
+        "401":
           description: Unauthorized
       security:
       - kathra_auth:
-        - "read"
+        - read
     post:
       summary: Create a new branch in an existing Kathra SourceRepository
       operationId: createBranch
@@ -126,16 +128,16 @@ paths:
         schema:
           type: string
       responses:
-        '200':
+        "200":
           description: Created branch name
           schema:
             type: string
-        '401':
+        "401":
           description: Unauthorized
       security:
       - kathra_auth:
-        - "write"
-  "/folders":
+        - write
+  /folders:
     get:
       operationId: getFolders
       summary: Retrieve accessible folders for user using provided identity
@@ -144,17 +146,17 @@ paths:
       produces:
       - application/json
       responses:
-        '200':
+        "200":
           description: List of accessible folders for the authenticated user
           schema:
             type: array
             items:
-              "$ref": "#/definitions/Folder"
-        '401':
+              $ref: '#/definitions/Folder'
+        "401":
           description: Unauthorized
       security:
       - kathra_auth:
-        - "read"
+        - read
     post:
       summary: Create a new folder in the Source Repository Provider
       operationId: createFolder
@@ -168,16 +170,16 @@ paths:
         schema:
           $ref: '#/definitions/Folder'
       responses:
-        '200':
+        "200":
           description: The created folder
           schema:
-            $ref: "#/definitions/Folder"
-        '401':
+            $ref: '#/definitions/Folder'
+        "401":
           description: Unauthorized
       security:
       - kathra_auth:
-        - "write"
-  "/sourceRepositories/{sourceRepositoryPath}/branches/{branch}/commits":
+        - write
+  /sourceRepositories/{sourceRepositoryPath}/branches/{branch}/commits:
     get:
       operationId: getCommits
       summary: Retrieve accessible commits in an existing branch
@@ -189,17 +191,17 @@ paths:
       - $ref: '#/parameters/sourceRepositoryPath'
       - $ref: '#/parameters/branch'
       responses:
-        '200':
+        "200":
           description: List of commits in the specified branch
           schema:
             type: array
             items:
-              $ref: "#/definitions/SourceRepositoryCommit"
-        '401':
+              $ref: '#/definitions/SourceRepositoryCommit'
+        "401":
           description: Unauthorized
       security:
       - kathra_auth:
-        - "read"
+        - read
     post:
       operationId: createCommit
       summary: Create new commit in branch
@@ -214,15 +216,15 @@ paths:
       - $ref: '#/parameters/filepath'
       - $ref: '#/parameters/uncompress'
       responses:
-        '200':
+        "200":
           description: Created commit
           schema:
-            $ref: "#/definitions/SourceRepositoryCommit"
-        '401':
+            $ref: '#/definitions/SourceRepositoryCommit'
+        "401":
           description: Unauthorized
       security:
       - kathra_auth:
-        - "read"
+        - read
 parameters:
   file:
     name: file
@@ -239,23 +241,24 @@ parameters:
   uncompress:
     name: uncompress
     in: query
-    description: Boolean to indicate if provided file should be uncompressed before being commited
+    description: Boolean to indicate if provided file should be uncompressed before
+      being commited
     default: false
     required: false
     type: boolean
-  folderPath:  
+  folderPath:
     name: folderPath
     in: path
     description: Folder's ID in which artifacts will be created
     required: true
     type: string
-  sourceRepositoryPath:  
+  sourceRepositoryPath:
     name: sourceRepositoryPath
     in: path
     description: SourceRepository's Path
     required: true
     type: string
-  branch:  
+  branch:
     name: branch
     in: path
     description: SourceRepository's branch
@@ -276,5 +279,5 @@ definitions:
 x-dependencies:
 - artifactId: kathra-core-model
   groupId: org.kathra
-  artifactVersion: 1.0.0-RC-SNAPSHOT
+  artifactVersion: 1.0.0
   modelPackage: core.model
