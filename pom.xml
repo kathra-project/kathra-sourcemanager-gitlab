@@ -36,19 +36,30 @@
         <groupId>org.kathra</groupId>
         <artifactId>kathra-exec-parent</artifactId>
         <version>1.0.0</version>
-        <relativePath>../kathra-exec-parent</relativePath>
+        
     </parent>
 
     <repositories>
         <repository>
-            <id>oss-sonatype</id>
-            <name>oss-sonatype</name>
+            <id>oss-sonatype-snapshot</id>
+            <name>oss-sonatype-snapshot</name>
             <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
             <snapshots>
                 <enabled>true</enabled>
             </snapshots>
         </repository>
+        <repository>
+            <id>oss-sonatype-staging</id>
+            <name>oss-sonatype-staging</name>
+            <url>https://oss.sonatype.org/service/local/repositories/orgkathra-1000/content/</url>
+        </repository>
+        <repository>
+            <id>oss-sonatype</id>
+            <name>oss-sonatype</name>
+            <url>https://oss.sonatype.org/content/groups/staging</url>
+        </repository>
     </repositories>
+
 
     <build>
         <plugins>
