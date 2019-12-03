@@ -49,13 +49,13 @@
             </snapshots>
         </repository>
         <repository>
-            <id>oss-sonatype-staging</id>
-            <name>oss-sonatype-staging</name>
-            <url>https://oss.sonatype.org/service/local/repositories/orgkathra-1000/content/</url>
+            <id>oss-sonatype-public</id>
+            <name>oss-sonatype-public</name>
+            <url>https://oss.sonatype.org/content/groups/public/</url>
         </repository>
         <repository>
-            <id>oss-sonatype</id>
-            <name>oss-sonatype</name>
+            <id>oss-sonatype-staging</id>
+            <name>oss-sonatype-staging</name>
             <url>https://oss.sonatype.org/content/groups/staging</url>
         </repository>
     </repositories>
