@@ -205,7 +205,6 @@ public class SourceManagerController implements SourceManagerService {
      * @return Folder
      */
     public Folder createFolder(Folder folder) throws Exception {
-        GitlabGroup parentGroup = null;
 
         Path path = Paths.get(SanitizeUtils.sanitizePathParameter(folder.getPath()));
         Path parentPath = path.getParent();
@@ -213,18 +212,22 @@ public class SourceManagerController implements SourceManagerService {
         String groupName = path.getFileName().toString();
         GitlabGroup gitlabGroup;
         try {
-            if (parentPath == null) {
-                gitlabGroup = gitlabService.getUserClient().createGroup(groupName, groupName, null, null, null, null);
-            } else {
-
+            GitlabGroup parent = null;
+            if (parentPath != null) {
                 try {
-                    parentGroup = gitlabService.getAdminClient().getGroup(parentPath.toString());
+                    parent = gitlabService.getAdminClient().getGroup(parentPath.toString());
                 } catch (FileNotFoundException e) {
-                    parentGroup = createFolderHierarchyIfNotExists(parentPath);
+                    parent = createFolderHierarchyIfNotExists(parentPath);
                 }
-
-                gitlabGroup = gitlabService.getUserClient().createGroup(groupName, groupName, null, null, null, parentGroup.getId());
             }
+            GitlabGroup existingGroup = null;
+            try {
+                existingGroup = gitlabService.getUserClient().getGroup(path.toString());
+            } catch (Exception e) {
+
+            }
+            gitlabGroup = (existingGroup != null) ? existingGroup : gitlabService.getUserClient().createGroup(groupName, groupName, null, null, null, parent.getId());
+
         } catch (GitlabAPIException e) {
             throw new ApiException(409, "A group with the same name already exists at the requested path");
         }
@@ -501,7 +504,7 @@ public class SourceManagerController implements SourceManagerService {
         try {
             gitlabService.createDeployKey(keyName, sshPublicKey, sourceRepositoryPath);
         } catch (GitlabAPIException e) {
-            throw new ApiException(e.getResponseCode(), e.getMessage().toString());
+            throw new ApiException(e.getResponseCode(), e.getMessage());
         }
         return new ApiResponse(200, null, "Successfully added deploy key " + keyName);
     }
