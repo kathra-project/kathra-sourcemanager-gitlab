@@ -178,7 +178,7 @@ public class SourceManagerController implements SourceManagerService {
                     gitService.pushTagOnlyToGitRepoWithUserCredentials(cp, git, true);
                 }
             } else {
-                throw new KathraException("No changes detected, aborting request.").errorCode(KathraException.ErrorCode.PRECONDITION_FAILED);
+                throw new KathraException("No changes detected, aborting request.").errorCode(KathraException.ErrorCode.NOT_MODIFIED);
             }
             return commit;
         } finally {
