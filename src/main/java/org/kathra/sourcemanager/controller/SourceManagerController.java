@@ -532,73 +532,6 @@ public class SourceManagerController implements SourceManagerService {
         return gitlabService.getMemberships(sourceRepositoryPath, memberType);
     }
 
-    private SourceRepository gitlabProjectToSourceRepository(GitlabProject project) {
-        return new SourceRepository()
-                .name(project.getName())
-                .id(project.getId().toString())
-                .provider("gitlab")
-                .httpUrl(project.getHttpUrl())
-                .webUrl(project.getWebUrl())
-                .sshUrl(project.getSshUrl());
-    }
-
-    private void initializeComponentLanguage(GitlabGroup gitlabComponentGroup, String language) throws IOException {
-        GitlabGroup languageGroup = gitlabService.getAdminClient().createGroup(language, language, null, null, null, gitlabComponentGroup.getId());
-        gitlabService.getAdminClient().createGroup("implementations", "implementations", null, null, null, languageGroup.getId());
-        gitlabService.getAdminClient().createProjectForGroup("model", languageGroup, "Repository containing java model library");
-        gitlabService.getAdminClient().createProjectForGroup("interface", languageGroup, "Repository containing java interface library");
-        gitlabService.getAdminClient().createProjectForGroup("client", languageGroup, "Repository containing java client library");
-    }
-
-    ///// OLD
-
-    /**
-     * Create a new aggregator project in Kathra source repository
-     *
-     * @param groupId     Id of the group in which the new aggregator project will be created (required)
-     * @param projectName Name of the project (required)
-     * @return ApiResponse
-     */
-    public ApiResponse createAggregator(String groupId, String projectName) throws Exception {
-        GitlabGroup group = gitlabService.getUserClient().getGroup(String.valueOf(groupId));
-        CreateGroupRequest groupRequest = new CreateGroupRequest(projectName + "-aggregator").setParentId(group.getId());
-        GitlabProject project = gitlabService.getUserClient().createProjectForGroup(projectName, group);
-        GitlabGroup aggregator = gitlabService.getUserClient().createGroup(groupRequest, null);
-        gitlabService.getUserClient().createProjectForGroup(projectName + "-java", aggregator);
-        return new ApiResponse(201, null, project.getHttpUrl());
-    }
-
-    /**
-     * Retrieve accessible projects in the desired group
-     *
-     * @param groupId Id of the group containing projects to be returned (required)
-     * @return List<String>
-     */
-    public List<String> getProjectsInGroup(String groupId) throws Exception {
-        List<GitlabProject> groupProjects = gitlabService.getUserClient().getGroupProjects(Integer.parseInt(groupId));
-        List<String> projectsNames = new ArrayList();
-
-        for (GitlabProject p : groupProjects) {
-            projectsNames.add(p.getName());
-        }
-        return projectsNames;
-    }
-
-    private String unzipInFolderAndDeleteZip(File zipFileObject, File workingFolder, String projectName) throws IOException {
-        String topLevelFolderName = ZipUtils.getTopLevelFolderNameInZipFile(zipFileObject);
-
-        ZipUtil.unpack(zipFileObject, workingFolder);
-
-        if (config.isDeleteZipFile() && !zipFileObject.delete()) {
-            logger.error("ERROR: " + zipFileObject.getAbsolutePath() + " cannot be deleted");
-        }
-
-        if (projectName != null && !projectName.isEmpty() && !topLevelFolderName.equals(projectName)) {
-            new File(workingFolder, topLevelFolderName).renameTo(new File(workingFolder, projectName));
-        }
-        return topLevelFolderName;
-    }
-
     private SourceRepositoryCommit getSourceRepositoryCommitFromGitlabCommit(GitlabCommit gitlabCommit) {
         SourceRepositoryCommit commit = new SourceRepositoryCommit()
                 .authorEmail(gitlabCommit.getAuthorEmail())
@@ -612,14 +545,6 @@ public class SourceManagerController implements SourceManagerService {
         return commit;
     }
 
-    private SourceRepositoryCommit getSourceRepositoryCommitFromGitlabBranchCommit(GitlabBranchCommit gitlabCommit) {
-        SourceRepositoryCommit commit = new SourceRepositoryCommit()
-                .createdAt(gitlabCommit.getCommittedDate().toString())
-                .message(gitlabCommit.getMessage());
-
-        commit.id(gitlabCommit.getId());
-        return commit;
-    }
 
     private String getGroupPathFromWebUrl(String webUrl) {
         return webUrl.split("groups/")[1];
@@ -653,7 +578,7 @@ public class SourceManagerController implements SourceManagerService {
         return currentFolder;
     }
 
-    private GitlabGroup checkExistingFolder (Path path) throws Exception {
+    private GitlabGroup checkExistingFolder (Path path) {
         Path pathToTest = path;
         GitlabGroup ret = null;
 

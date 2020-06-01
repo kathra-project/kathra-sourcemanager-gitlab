@@ -64,14 +64,6 @@ public class GitlabService {
         userClient = getGitlabClientForUser();
     }
 
-    public GitlabService(String host, String apiToken, Session session, GitlabAPI adminClient, GitlabAPI userClient) throws Exception {
-        this.host = host;
-        this.apiToken = apiToken;
-        this.session = session;
-        this.adminClient = adminClient;
-        this.userClient = userClient;
-    }
-
     private GitlabAPI getGitlabClientForUser() throws UnirestException, IOException {
         this.impersonationTokenForUser = retrieveImpersonationTokenForUser();
         if (impersonationTokenForUser == null) throw new IOException("Unable to retrieve user gitlab token");
@@ -92,7 +84,7 @@ public class GitlabService {
             JSONObject jsonObject;
             for (Object o : array) {
                 jsonObject = (JSONObject) o;
-                if (jsonObject.get("name").equals("KathraGitlabSourceManager") && jsonObject.get("revoked").equals(false)) {
+                if (jsonObject.has("token") && jsonObject.get("name").equals("KathraGitlabSourceManager") && jsonObject.get("revoked").equals(false)) {
                     return (String) jsonObject.get("token");
                 }
             }
