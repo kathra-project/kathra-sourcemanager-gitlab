@@ -1,5 +1,5 @@
-/* 
- * Copyright 2019 The Kathra Authors.
+/*
+ * Copyright (c) 2020. The Kathra Authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,8 +14,7 @@
  * limitations under the License.
  *
  * Contributors:
- *
- *    IRT SystemX (https://www.kathra.org/)    
+ *    IRT SystemX (https://www.kathra.org/)
  *
  */
 
@@ -25,24 +24,28 @@ import org.kathra.utils.ConfigManager;
 
 public class Config extends ConfigManager {
 
+    private final String password;
+    private final String username;
     private String gitlabUrl;
     private String gitlabApiToken;
-    private String folderNameContainingGitRepos;
     private boolean deleteFolderAfterGit;
-    private boolean deleteZipFile;
     private String kathraRootGroup;
-    private String userManagerUrl;
 
-    private int maximalTryNumberToCreateDirectory;
+    private String keycloakHost;
+    private String resourceManager;
 
     public Config() {
         gitlabUrl = getProperty("KATHRA_SOURCEMANAGER_GITLAB_URL", "https://git.dev-irtsysx.fr");
-        folderNameContainingGitRepos = getProperty("KATHRA_SOURCEMANAGER_FOLDER_NAME_CONTAINING_GIT_REPOS",System.getProperty("java.io.tmpdir")+"/kathra-sourcemanager-git-repos");
-        maximalTryNumberToCreateDirectory = Integer.parseInt(getProperty("KATHRA_SOURCEMANAGER_MAXIMAL_TRY_NUMBER_TO_CREATE_DIRECTORY", "3"));
         deleteFolderAfterGit = Boolean.valueOf(getProperty("KATHRA_SOURCEMANAGER_DELETE_FOLDER_AFTER_GIT", "true"));
-        deleteZipFile = Boolean.valueOf(getProperty("KATHRA_SOURCEMANAGER_DELETE_ZIP_FILE", "true"));
         gitlabApiToken = getProperty("KATHRA_SOURCEMANAGER_GITLAB_API_TOKEN");
         kathraRootGroup = getProperty("KATHRA_ROOT_GROUP", "kathra-projects");
+
+        username = getProperty("USERNAME","");
+        password = getProperty("PASSWORD", "");
+        resourceManager = getProperty("RESOURCE_MANAGER_URL", "");
+        keycloakHost = getProperty("KEYCLOAK_AUTH_URL", "") .replace("http://", "")
+                .replace("https://", "")
+                .replace("/aut.*", "");
     }
 
     public String getGitlabUrl() {
@@ -53,23 +56,31 @@ public class Config extends ConfigManager {
         return gitlabApiToken;
     }
 
-    public String getFolderNameContainingGitRepos() {
-        return folderNameContainingGitRepos;
-    }
-
     public boolean isDeleteFolderAfterGit() {
         return deleteFolderAfterGit;
     }
 
-    public boolean isDeleteZipFile() {
-        return deleteZipFile;
-    }
-
-    public int getMaximalTryNumberToCreateDirectory() {
-        return maximalTryNumberToCreateDirectory;
-    }
-
     public String getKathraRootGroup() {
         return kathraRootGroup;
+    }
+
+    public String getLoginKeycloak() {
+        return username;
+    }
+
+    public String getPasswordKeycloak() {
+        return password;
+    }
+
+    public String getResourceManager() {
+        return resourceManager;
+    }
+
+    public String getKeycloakHost() {
+        return keycloakHost;
+    }
+
+    public String getDelaySchedule() {
+        return "30s";
     }
 }

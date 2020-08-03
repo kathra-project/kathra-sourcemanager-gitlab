@@ -1,10 +1,9 @@
-swagger: "2.0"
 info:
   x-groupId: org.kathra
   x-artifactName: SourceManager
   description: Kathra SourceManager is a Kathra Service in charge of source management
     operations
-  version: 1.1.0
+  version: 1.2.0
   title: Kathra SourceManager
 securityDefinitions:
   kathra_auth:

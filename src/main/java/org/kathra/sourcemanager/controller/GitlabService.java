@@ -1,5 +1,5 @@
-/* 
- * Copyright 2019 The Kathra Authors.
+/*
+ * Copyright (c) 2020. The Kathra Authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,8 +14,7 @@
  * limitations under the License.
  *
  * Contributors:
- *
- *    IRT SystemX (https://www.kathra.org/)    
+ *    IRT SystemX (https://www.kathra.org/)
  *
  */
 
@@ -48,13 +47,13 @@ import java.util.List;
  */
 public class GitlabService {
     public static final String PRIVATE_TOKEN = "PRIVATE-TOKEN";
-    String host;
-    String apiToken;
+    private String host;
+    private String apiToken;
     private GitlabAPI adminClient;
     private GitlabAPI userClient;
-    Session session;
-    String impersonationTokenForUser;
-    Logger logger = Logger.getLogger(GitlabService.class.getName());
+    protected Session session;
+    private String impersonationTokenForUser;
+    private Logger logger = Logger.getLogger(GitlabService.class.getName());
 
     public GitlabService(String host, String apiToken, Session session) throws Exception {
         this.host = host;
@@ -64,23 +63,23 @@ public class GitlabService {
         userClient = getGitlabClientForUser();
     }
 
-    public GitlabService(String host, String apiToken, Session session, GitlabAPI adminClient, GitlabAPI userClient) throws Exception {
-        this.host = host;
-        this.apiToken = apiToken;
-        this.session = session;
-        this.adminClient = adminClient;
-        this.userClient = userClient;
-    }
-
     private GitlabAPI getGitlabClientForUser() throws UnirestException, IOException {
         this.impersonationTokenForUser = retrieveImpersonationTokenForUser();
-        if (impersonationTokenForUser == null) throw new IOException("Unable to retrieve user gitlab token");
+        if (impersonationTokenForUser == null) {
+            // User not found, use admin token
+            return GitlabAPI.connect(host, apiToken);
+        }
         return GitlabAPI.connect(host, impersonationTokenForUser, TokenType.PRIVATE_TOKEN);
     }
 
     public String retrieveImpersonationTokenForUser() throws UnirestException, IOException {
-        GitlabUser user = adminClient.getUserViaSudo(session.getCallerName());
-
+        // TODO manage technical user not registred in gitlab
+        GitlabUser user;
+        try {
+            user = adminClient.getUserViaSudo(session.getCallerName());
+        } catch(Exception e) {
+            return null;
+        }
         HttpResponse<JsonNode> jsonNodeHttpResponse = Unirest.get(host + "/api/v4/users/{id}/impersonation_tokens")
                 .routeParam("id", user.getId().toString())
                 .header(PRIVATE_TOKEN, apiToken)
@@ -92,7 +91,7 @@ public class GitlabService {
             JSONObject jsonObject;
             for (Object o : array) {
                 jsonObject = (JSONObject) o;
-                if (jsonObject.get("name").equals("KathraGitlabSourceManager") && jsonObject.get("revoked").equals(false)) {
+                if (jsonObject.has("token") && jsonObject.get("name").equals("KathraGitlabSourceManager") && jsonObject.get("revoked").equals(false)) {
                     return (String) jsonObject.get("token");
                 }
             }
