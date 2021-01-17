@@ -1,4 +1,4 @@
-FROM maven:3-jdk-15 AS build
+FROM maven:3-openjdk-15-slim AS build
 COPY src /usr/src/app/src
 COPY pom.xml /usr/src/app
 RUN mvn -f /usr/src/app/pom.xml install
